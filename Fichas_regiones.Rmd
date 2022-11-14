@@ -146,7 +146,7 @@ ggplot(merge_regional_asi) + #Cambiar
   scale_y_continuous(labels = scales::comma) +
   coord_flip() +
   #scale_color_brewer(palette = "Dark2", direction = -1, labels = comma)+
-  labs(title = "Gráfica 1. Total de carpetas de investigación por el delito de Abuso Sexual Infantil",
+  labs(title = "Gráfica 1. Total de carpetas de investigación por el delito de abuso sexual infantil",
        caption = "Elaborado con datos de Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública",
        x="", y="", color="", fill="") +
   theme_minimal() + 
@@ -210,7 +210,7 @@ ggplot(asi_jal) +
   geom_line(size = .5, colour = "#f21d72") +
   geom_point(size = 1,colour = "#f21d72")+
   theme_minimal()+
-  labs(title = "Gráfica 2. Carpetas de investigación por el delito de Feminicidio, de enero 2015 a septiembre 2022",
+  labs(title = "Gráfica 2. Carpetas de investigación por el delito de abuso sexual infantil, de enero 2015 a septiembre 2022",
        caption = "Elaborado con datos de Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública",
        x="", y="", color="", fill="") +
   theme_minimal() + 
@@ -286,7 +286,7 @@ ggplot(anual_asi) +
   scale_fill_hue(direction = 1) +
   scale_y_continuous(labels = scales::comma) +
   theme_minimal()+
-  labs(title = "Gráfica 3. Carpetas anuales de investigación por el delito de Feminicidio",
+  labs(title = "Gráfica 3. Carpetas anuales de investigación por el delito de abuso sexual infantil",
        caption = "Elaborado con datos de Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública",
        x="", y="", color="", fill="") +
   theme_minimal() + 
@@ -402,7 +402,7 @@ ggplot(merge_regional_vio) + #Cambiar
   scale_y_continuous(labels = scales::comma) +
   coord_flip() +
   #scale_color_brewer(palette = "Dark2", direction = -1, labels = comma)+
-  labs(title = "Gráfica 1. Total de carpetas de investigación por el delito de Violación",
+  labs(title = "Gráfica 4. Total de carpetas de investigación por el delito de violación",
        caption = "Elaborado con datos de Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública",
        x="", y="", color="", fill="") +
   theme_minimal() + 
@@ -466,7 +466,7 @@ ggplot(vio_jal) +
   geom_line(size = .5, colour = "#7030A0") +
   geom_point(size = 1,colour = "#7030A0")+
   theme_minimal()+
-  labs(title = "Gráfica 2. Carpetas de investigación por el delito de Feminicidio, de enero 2015 a septiembre 2022",
+  labs(title = "Gráfica 5. Carpetas de investigación por el delito de violación, de enero 2015 a septiembre 2022",
        caption = "Elaborado con datos de Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública",
        x="", y="", color="", fill="") +
   theme_minimal() + 
@@ -536,13 +536,13 @@ principal_porcentaje_vio<-(vio_principal_4_suma/vio_2022_mun)*100
 
 ggplot(anual_vio) +
   aes(x =as.factor(Año), y = Total) +
-  geom_col(fill = "#6609bd") +
+  geom_col(fill = "#7030A0") +
   theme_minimal()+
-  geom_text(aes(label=comma(Total)), size=3.0, color="#030303")+
+  geom_text(aes(label=comma(Total)), size=3.0)+
   scale_fill_hue(direction = 1) +
   scale_y_continuous(labels = scales::comma) +
   theme_minimal()+
-  labs(title = "Gráfica 3. Carpetas anuales de investigación por el delito de Feminicidio",
+  labs(title = "Gráfica 6. Carpetas anuales de investigación por el delito de violación",
        caption = "Elaborado con datos de Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública",
        x="", y="", color="", fill="") +
   theme_minimal() + 
@@ -653,13 +653,13 @@ mycolors <- colorRampPalette(brewer.pal(9, "RdPu"))
 ggplot(merge_regional_vf) + #Cambiar
   aes(x=reorder(Región, Total_regional), y= Total_regional, fill= Total_regional) +
   geom_col() +
-  geom_text(aes(label=comma(Total_regional)), size=3.0, color="#030303", vjust = .5, hjust=-1) +
+  geom_text(aes(label=comma(Total_regional)), size=3.0, vjust = .5, hjust=-1) +
   #scale_fill_viridis(discrete = F, option = "I", direction = -1) + #opción  A, B, C , D , E , F ,G +
   scale_fill_gradient(low = "#dc8cad", high = "#f21d72")+
   scale_y_continuous(labels = scales::comma) +
   coord_flip() +
   #scale_color_brewer(palette = "Dark2", direction = -1, labels = comma)+
-  labs(title = "Gráfica 1. Total de carpetas de investigación por el delito de Violencia familiar Infantil",
+  labs(title = "Gráfica 7. Total de carpetas de investigación por el delito de violencia familiar",
        caption = "Elaborado con datos de Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública",
        x="", y="", color="", fill="") +
   theme_minimal() + 
@@ -724,7 +724,7 @@ ggplot(vf_jal) +
   geom_point(size = 1,colour = "#f21d72")+
   scale_y_continuous(labels = scales::comma) +
   theme_minimal()+
-  labs(title = "Gráfica 2. Carpetas de investigación por el delito de Feminicidio, de enero 2015 a septiembre 2022",
+  labs(title = "Gráfica 8. Carpetas de investigación por el delito de violencia familiar, de enero 2015 a septiembre 2022",
        caption = "Elaborado con datos de Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública",
        x="", y="", color="", fill="") +
   theme_minimal() + 
@@ -794,13 +794,13 @@ principal_porcentaje_vf<-(vf_principal_4_suma/vf_2022_mun)*100
 
 ggplot(anual_vf) +
   aes(x =as.factor(Año), y = Total) +
-  geom_col(fill = "#6609bd") +
+  geom_col(fill = "#f21d72") +
   theme_minimal()+
-  geom_text(aes(label=comma(Total)), size=3.0, color="#f21d72")+
+  geom_text(aes(label=comma(Total)), size=3.0)+
   scale_fill_hue(direction = 1) +
   scale_y_continuous(labels = scales::comma) +
   theme_minimal()+
-  labs(title = "Gráfica 3. Carpetas anuales de investigación por el delito de Feminicidio",
+  labs(title = "Gráfica 9. Carpetas anuales de investigación por el delito de violencia familiar",
        caption = "Elaborado con datos de Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública",
        x="", y="", color="", fill="") +
   theme_minimal() + 
@@ -913,7 +913,7 @@ ggplot(merge_regional_femi) + #Cambiar
   scale_y_continuous(labels = scales::comma) +
   coord_flip() +
   #scale_color_brewer(palette = "Dark2", direction = -1, labels = comma)+
-  labs(title = "Gráfica 1. Total de carpetas de investigación por el delito de Feminicidio",
+  labs(title = "Gráfica 10. Total de carpetas de investigación por el delito de feminicidio",
        caption = "Elaborado con datos de Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública",
        x="", y="", color="", fill="") +
   theme_minimal() + 
@@ -976,7 +976,7 @@ ggplot(femi_jal) +
   geom_line(size = .5, colour = "#7030A0") +
   geom_point(size = 1,colour = "#7030A0")+
   theme_minimal()+
-  labs(title = "Gráfica 2. Carpetas de investigación por el delito de Feminicidio, de enero 2015 a septiembre 2022",
+  labs(title = "Gráfica 11. Carpetas de investigación por el delito de feminicidio, de enero 2015 a septiembre 2022",
        caption = "Elaborado con datos de Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública",
        x="", y="", color="", fill="") +
   theme_minimal() + 
@@ -1047,7 +1047,7 @@ ggplot(anual_femi) +
   scale_fill_hue(direction = 1) +
   scale_y_continuous(labels = scales::comma) +
   theme_minimal()+
-  labs(title = "Gráfica 3. Carpetas anuales de investigación por el delito de Feminicidio",
+  labs(title = "Gráfica 12. Carpetas anuales de investigación por el delito de feminicidio",
        caption = "Elaborado con datos de Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública",
        x="", y="", color="", fill="") +
   theme_minimal() + 
