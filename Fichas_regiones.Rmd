@@ -1,7 +1,9 @@
 ---
-output:
-  html_document: default
-  pdf_document: default
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    css: style_region.css
 ---
 
 ![](images/logos_jal.png)
@@ -16,7 +18,7 @@ output:
 
  
 
-# <b>Situación actual en la Región Centro en torno a la violencia de género contra mujeres, adolescentes y niñez.</b>
+# **Situación actual en la Región Centro en torno a la violencia de género contra mujeres, adolescentes y niñez.**
 
  
 
@@ -46,7 +48,7 @@ library(lubridate)
 
 regiones_jalisco <- read_excel("~/NLMR/Regiones_directorio.xlsx")
 
-datosJaliscosep22<-read.csv("IDM_NM_sep22.csv",check.names = T, encoding = "latin1") %>%
+datosJaliscosep22<-read.csv("IDM_NM_sep22.csv", check.names = T, encoding = "latin1") %>%
  mutate(Subtipo.de.delito=case_when(
     Subtipo.de.delito=="Abuso sexual"~"Abuso sexual",
     Subtipo.de.delito=="Violación equiparada"~"Violación",
@@ -69,7 +71,7 @@ merge_regional <- merge(regiones_jalisco, datosJaliscosep22, by.x = "Municipio",
 
 <div style="text-align: justify">
 
-La región Centro está conformada por doce municipios: Cuquío, Guadalajara, Ixtlahuacán de los Membrillos, Ixtlahuacán del Río, Juanacatlán, El Salto, San Cristóbal de la Barranca, Tlajomulco de Zúñiga, Tlaquepaque, Tonalá, Zapopan y Zapotlanejo.
+La Región Centro está conformada por doce municipios: Cuquío, Guadalajara, Ixtlahuacán de los Membrillos, Ixtlahuacán del Río, Juanacatlán, El Salto, San Cristóbal de la Barranca, Tlajomulco de Zúñiga, Tlaquepaque, Tonalá, Zapopan y Zapotlanejo.
 
 De acuerdo a la Encuesta Intercensal de 2015, se registraba un total de 4 millones 905 mil 289 habitantes, de los cuales, 2 millones 394 mil 464 son hombres (48.8%) y 2 millones 510 mil 825 son mujeres (51.2%), es decir, el número de mujeres supera al de hombres en 116 mil 361 personas. Este volumen de población regional representa el 62.5 por ciento del total estatal.
 
@@ -81,10 +83,9 @@ Con respecto de la violencia de género contra las mujeres, adolescentes y niñe
 
  
 
-### <b>Abuso Sexual Infantil</b>
+## **Abuso Sexual Infantil**
 
 </p>
-
 
 ```{r include=FALSE}
 
@@ -137,10 +138,14 @@ nb.cols <-12
 mycolors <- colorRampPalette(brewer.pal(9, "RdPu"))
 (nb.cols)
 
-ggplot(merge_regional_asi) + #Cambiar
-  aes(x=reorder(Región, Total_regional), y= Total_regional, fill= Total_regional) +
+merge_regional_asi %>% 
+mutate(text = paste("Región: ", Región,
+                    "\nTotal de carpetas: ", scales::comma(Total_regional), sep=""))%>%
+ggplot() + #Cambiar
+  aes(x=reorder(Región, Total_regional), y= Total_regional, 
+      fill= Total_regional, text=text) +
   geom_col() +
-  geom_text(aes(label=comma(Total_regional)), size=3.0, color="#030303", vjust = .5, hjust=-1) +
+  #geom_text(aes(label=comma(Total_regional)), size=3.0, color="#030303", vjust = .5, hjust=-1) +
   #scale_fill_viridis(discrete = F, option = "I", direction = -1) + #opción  A, B, C , D , E , F ,G +
   scale_fill_gradient(low = "#dc8cad", high = "#f21d72")+
   scale_y_continuous(labels = scales::comma) +
@@ -150,16 +155,16 @@ ggplot(merge_regional_asi) + #Cambiar
        caption = "Elaborado con datos de Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública",
        x="", y="", color="", fill="") +
   theme_minimal() + 
-  theme(text=element_text(size=11),
+  theme(text=element_text(size=11, family = "Century Gothic"),
         legend.position='none',
-        plot.title = element_text(size = 10L, hjust = 0, color = "#6e6d6d"),
-        plot.caption = element_text(size = 10L, hjust = 0, face = "italic"),
-        axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=1, size=11))->grafico_regional_asi
+        plot.title = element_text(size = 10L, hjust = 0, color = "#6e6d6d", family = "Century Gothic"),
+        plot.caption = element_text(size = 10L, hjust = 0, face = "italic", family = "Century Gothic"),
+        axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=1, size=11, family = "Century Gothic"))->grafico_regional_asi
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=10, fig.height=5}
 #Gráfico de barras total
-ggplotly(grafico_regional_asi)
+ggplotly(grafico_regional_asi, tooltip = "text")
 ```
 
 ```{r include=FALSE}
@@ -204,9 +209,12 @@ historico_asi[1,2]->promedio_asi
 historico_asi[1,1]->suma_asi
 suma_asi<-suma_asi %>% unlist
 
-
-ggplot(asi_jal) +
-  aes(x = Periodo, y = Total) +
+asi_jal %>% 
+  mutate(text = paste("Periodo: ", format(as_date(asi_jal$Periodo), "%B de %Y"),
+                    "\nTotal de carpetas: ", scales::comma(Total), sep=""))%>%
+     filter(Periodo<="2022-08-01") %>%  
+ggplot() +
+  aes(x = Periodo, y = Total, group=1, text=text) +
   geom_line(size = .5, colour = "#f21d72") +
   geom_point(size = 1,colour = "#f21d72")+
   theme_minimal()+
@@ -214,19 +222,18 @@ ggplot(asi_jal) +
        caption = "Elaborado con datos de Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública",
        x="", y="", color="", fill="") +
   theme_minimal() + 
-  theme(text=element_text(size=11),
+  theme(text=element_text(size=11, family = "Century Gothic"),
         legend.position='none',
-        plot.title = element_text(size = 10L, hjust = 0, color = "#6e6d6d"),
-        plot.caption = element_text(size = 10L, hjust = 0, face = "italic"),
-        axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=1, size=11))->asi_ts
+        plot.title = element_text(size = 10L, hjust = 0, color = "#6e6d6d", family = "Century Gothic"),
+        plot.caption = element_text(size = 10L, hjust = 0, face = "italic", family = "Century Gothic"),
+        axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=1, size=11, family = "Century Gothic"))->asi_ts
 ```
 
-En el periodo 2015 a 2022 se contabilizan **`r comma(suma_asi)`** carpetas por **Abuso sexual**, un promedio mensual de **`r comma(promedio_asi)`**. El mes con mayor registros de carpetas de investigación por este delito es el periodo de **`r format(as_date(año_periodo_maximo_asi$Periodo), "%B de %Y")`** con **`r comma(suma_periodo_maximo_asi)`**. 
+En el periodo 2015 a 2022 se contabilizan **`r comma(suma_asi)`** carpetas por **Abuso sexual**, un promedio mensual de **`r comma(promedio_asi)`**. El mes con mayor registros de carpetas de investigación por este delito es el periodo de **`r format(as_date(año_periodo_maximo_asi$Periodo), "%B de %Y")`** con **`r comma(suma_periodo_maximo_asi)`**.
 
 ```{r echo=FALSE, fig.width=10, fig.height=5}
-ggplotly(asi_ts)
+ggplotly(asi_ts, tooltip = "text")
 ```
-
 
 ```{r include=FALSE, fig.width=10, fig.height=5}
 merge_regional %>%
@@ -278,11 +285,14 @@ asi_2022_mun<-asi_2022_mun %>% summarise(Total=sum(Total))
 
 principal_porcentaje_asi<-(asi_principal_4_suma/asi_2022_mun)*100
 
-ggplot(anual_asi) +
-  aes(x =as.factor(Año), y = Total) +
+anual_asi %>% 
+  mutate(text = paste("Año: ", Año,
+                      "\nTotal de carpetas: ", scales::comma(Total), sep="")) %>%
+ggplot() +
+  aes(x =as.factor(Año), y = Total, text=text) +
   geom_col(fill = "#f21d72") +
   theme_minimal()+
-  geom_text(aes(label=comma(Total)), size=3.0)+
+  #geom_text(aes(label=comma(Total)), size=3.0)+
   scale_fill_hue(direction = 1) +
   scale_y_continuous(labels = scales::comma) +
   theme_minimal()+
@@ -290,23 +300,21 @@ ggplot(anual_asi) +
        caption = "Elaborado con datos de Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública",
        x="", y="", color="", fill="") +
   theme_minimal() + 
-  theme(text=element_text(size=11),
+  theme(text=element_text(size=11, family = "Century Gothic"),
         legend.position='none',
-        plot.title = element_text(size = 10L, hjust = 0, color = "#6e6d6d"),
-        plot.caption = element_text(size = 10L, hjust = 0, face = "italic"),
-        axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=1, size=11))->g_anual_asi
+        plot.title = element_text(size = 10L, hjust = 0, color = "#6e6d6d", family = "Century Gothic"),
+        plot.caption = element_text(size = 10L, hjust = 0, face = "italic", family = "Century Gothic"),
+        axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=1, size=11, family = "Century Gothic"))->g_anual_asi
 
 ```
 
-De 2015 a 2022 se han registrado **`r comma(asi_total)`** carpetas de **Abuso sexual infantil** en la región, el año con mayor registros es el **`r asi_año`** con  **`r comma(asi_max)`**. De enero a septiembre 2022 se han contabilizado **`r comma(asi_2022)`** carpetas.
+De 2015 a 2022 se han registrado **`r comma(asi_total)`** carpetas de **Abuso sexual infantil** en la región, el año con mayor registros es el **`r asi_año`** con **`r comma(asi_max)`**. De enero a septiembre 2022 se han contabilizado **`r comma(asi_2022)`** carpetas.
 
 ```{r echo=FALSE, fig.width=10, fig.height=5}
-ggplotly(g_anual_asi)
+ggplotly(g_anual_asi, tooltip = "text")
 ```
 
-
 De los municipios con mayor número de incidencia se encuentran: **`r mun_principales_asi`**, los cuales representan el **`r round(principal_porcentaje_asi)`** **%** de las carpetas registradas en la región durante 2022.
-
 
 ```{r include=FALSE}
 
@@ -338,7 +346,7 @@ DT::datatable(asi)
 
  
 
-### <b>Violación</b>
+## **Violación**
 
 </p>
 
@@ -393,10 +401,15 @@ nb.cols <-12
 mycolors <- colorRampPalette(brewer.pal(9, "RdPu"))
 (nb.cols)
 
-ggplot(merge_regional_vio) + #Cambiar
-  aes(x=reorder(Región, Total_regional), y= Total_regional, fill= Total_regional) +
+
+merge_regional_vio %>% 
+mutate(text = paste("Región: ", Región,
+                    "\nTotal de carpetas: ", scales::comma(Total_regional), sep=""))%>%
+ggplot() + #Cambiar
+  aes(x=reorder(Región, Total_regional), y= Total_regional, 
+      fill= Total_regional, text=text) +
   geom_col() +
-  geom_text(aes(label=comma(Total_regional)), size=3.0, color="#030303", vjust = .5, hjust=-1) +
+  #geom_text(aes(label=comma(Total_regional)), size=3.0, color="#030303", vjust = .5, hjust=-1) +
   #scale_fill_viridis(discrete = F, option = "I", direction = -1) + #opción  A, B, C , D , E , F ,G +
   scale_fill_gradient(low = "#BA8CDC", high = "#7030A0")+
   scale_y_continuous(labels = scales::comma) +
@@ -415,7 +428,7 @@ ggplot(merge_regional_vio) + #Cambiar
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=10, fig.height=5}
 #Gráfico de barras total
-ggplotly(grafico_regional_vio)
+ggplotly(grafico_regional_vio, tooltip = "text")
 ```
 
 ```{r include=FALSE}
@@ -460,9 +473,12 @@ historico_vio[1,2]->promedio_vio
 historico_vio[1,1]->suma_vio
 suma_vio<-suma_vio %>% unlist
 
-
-ggplot(vio_jal) +
-  aes(x = Periodo, y = Total) +
+vio_jal %>%
+   mutate(text = paste("Periodo: ", format(as_date(vio_jal$Periodo), "%B de %Y"),
+                    "\nTotal de carpetas: ", scales::comma(Total), sep="")) %>%
+     filter(Periodo<="2022-08-01") %>%  
+ggplot() +
+  aes(x = Periodo, y = Total, group=1,text=text) +
   geom_line(size = .5, colour = "#7030A0") +
   geom_point(size = 1,colour = "#7030A0")+
   theme_minimal()+
@@ -470,19 +486,18 @@ ggplot(vio_jal) +
        caption = "Elaborado con datos de Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública",
        x="", y="", color="", fill="") +
   theme_minimal() + 
-  theme(text=element_text(size=11),
+  theme(text=element_text(size=11, family = "Century Gothic"),
         legend.position='none',
-        plot.title = element_text(size = 10L, hjust = 0, color = "#6e6d6d"),
-        plot.caption = element_text(size = 10L, hjust = 0, face = "italic"),
-        axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=1, size=11))->vio_ts
+        plot.title = element_text(size = 10L, hjust = 0, color = "#6e6d6d", family = "Century Gothic"),
+        plot.caption = element_text(size = 10L, hjust = 0, face = "italic", family = "Century Gothic"),
+        axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=1, size=11, family = "Century Gothic"))->vio_ts
 ```
 
-En el periodo 2015 a 2022 se contabilizan **`r comma(suma_vio)`** carpetas por **Violación**, un promedio mensual de **`r comma(promedio_vio)`**. El mes con mayor registros de carpetas de investigación por este delito es el periodo de **`r format(as_date(año_periodo_maximo_vio$Periodo), "%B de %Y")`** con **`r comma(suma_periodo_maximo_vio)`**. 
+En el periodo 2015 a 2022 se contabilizan **`r comma(suma_vio)`** carpetas por **Violación**, un promedio mensual de **`r comma(promedio_vio)`**. El mes con mayor registros de carpetas de investigación por este delito es el periodo de **`r format(as_date(año_periodo_maximo_vio$Periodo), "%B de %Y")`** con **`r comma(suma_periodo_maximo_vio)`**.
 
 ```{r echo=FALSE, fig.width=10, fig.height=5}
-ggplotly(vio_ts)
+ggplotly(vio_ts, tooltip = "text")
 ```
-
 
 ```{r include=FALSE, fig.width=10, fig.height=5}
 merge_regional %>%
@@ -534,11 +549,16 @@ vio_2022_mun<-vio_2022_mun %>% summarise(Total=sum(Total))
 
 principal_porcentaje_vio<-(vio_principal_4_suma/vio_2022_mun)*100
 
-ggplot(anual_vio) +
-  aes(x =as.factor(Año), y = Total) +
+
+anual_vio %>% 
+  mutate(text = paste("Año: ", Año,
+                    "\nTotal de carpetas: ", scales::comma(Total), sep=""))%>%
+
+ggplot() +
+  aes(x =as.factor(Año), y = Total, text=text) +
   geom_col(fill = "#7030A0") +
   theme_minimal()+
-  geom_text(aes(label=comma(Total)), size=3.0)+
+  #geom_text(aes(label=comma(Total)), size=3.0)+
   scale_fill_hue(direction = 1) +
   scale_y_continuous(labels = scales::comma) +
   theme_minimal()+
@@ -554,15 +574,13 @@ ggplot(anual_vio) +
 
 ```
 
-De 2015 a 2022 se han registrado **`r comma(vio_total)`** carpetas de **Violación** en la región, el año con mayor registros es el **`r vio_año`** con  **`r comma(vio_max)`**. De enero a septiembre 2022 se han contabilizado **`r comma(vio_2022)`** carpetas.
+De 2015 a 2022 se han registrado **`r comma(vio_total)`** carpetas de **Violación** en la región, el año con mayor registros es el **`r vio_año`** con **`r comma(vio_max)`**. De enero a septiembre 2022 se han contabilizado **`r comma(vio_2022)`** carpetas.
 
 ```{r echo=FALSE, fig.width=10, fig.height=5}
-ggplotly(g_anual_vio)
+ggplotly(g_anual_vio, tooltip = "text")
 ```
 
-
 De los municipios con mayor número de incidencia se encuentran: **`r mun_principales_vio`**, los cuales representan el **`r round(principal_porcentaje_vio)`** **%** de las carpetas registradas en la región durante 2022.
-
 
 ```{r include=FALSE}
 
@@ -587,17 +605,16 @@ merge_regional %>%
 ```{r echo=FALSE, fig.width=4, fig.height=4}
 DT::datatable(asi) 
 ```
+
 ------------------------------------------------------------------------
 
 <p style="text-align: left;">
 
  
 
-### <b>Violencia familiar</b>
+## **Violencia familiar**
 
 </p>
-
-
 
 ```{r include=FALSE}
 
@@ -650,10 +667,15 @@ nb.cols <-12
 mycolors <- colorRampPalette(brewer.pal(9, "RdPu"))
 (nb.cols)
 
-ggplot(merge_regional_vf) + #Cambiar
-  aes(x=reorder(Región, Total_regional), y= Total_regional, fill= Total_regional) +
+
+merge_regional_vf %>% 
+mutate(text = paste("Región: ", Región,
+                    "\nTotal de carpetas: ", scales::comma(Total_regional), sep=""))%>%
+ggplot() + #Cambiar
+  aes(x=reorder(Región, Total_regional), y= Total_regional, 
+      fill= Total_regional, text=text) +
   geom_col() +
-  geom_text(aes(label=comma(Total_regional)), size=3.0, vjust = .5, hjust=-1) +
+  #geom_text(aes(label=comma(Total_regional)), size=3.0, vjust = .5, hjust=-1) +
   #scale_fill_viridis(discrete = F, option = "I", direction = -1) + #opción  A, B, C , D , E , F ,G +
   scale_fill_gradient(low = "#dc8cad", high = "#f21d72")+
   scale_y_continuous(labels = scales::comma) +
@@ -672,7 +694,7 @@ ggplot(merge_regional_vf) + #Cambiar
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=10, fig.height=5}
 #Gráfico de barras total
-ggplotly(grafico_regional_vf)
+ggplotly(grafico_regional_vf, tooltip="text")
 ```
 
 ```{r include=FALSE}
@@ -717,9 +739,12 @@ historico_vf[1,2]->promedio_vf
 historico_vf[1,1]->suma_vf
 suma_vf<-suma_vf %>% unlist
 
-
-ggplot(vf_jal) +
-  aes(x = Periodo, y = Total) +
+vf_jal %>% 
+ filter(Periodo<="2022-08-01") %>%  
+ mutate(text = paste("Periodo: ", format(as_date(asi_jal$Periodo), "%B de %Y"),
+                    "\nTotal de carpetas: ", scales::comma(Total), sep=""))%>%
+ggplot() +
+  aes(x = Periodo, y = Total, group=1, text=text) +
   geom_line(size = .5, colour = "#f21d72") +
   geom_point(size = 1,colour = "#f21d72")+
   scale_y_continuous(labels = scales::comma) +
@@ -735,12 +760,11 @@ ggplot(vf_jal) +
         axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=1, size=11))->vf_ts
 ```
 
-En el periodo 2015 a 2022 se contabilizan **`r comma(suma_vf)`** carpetas por **Violencia familiar**, un promedio mensual de **`r comma(promedio_vf)`**. El mes con mayor registros de carpetas de investigación por este delito es el periodo de **`r format(as_date(año_periodo_maximo_vf$Periodo), "%B de %Y")`** con **`r comma(suma_periodo_maximo_vf)`**. 
+En el periodo 2015 a 2022 se contabilizan **`r comma(suma_vf)`** carpetas por **Violencia familiar**, un promedio mensual de **`r comma(promedio_vf)`**. El mes con mayor registros de carpetas de investigación por este delito es el periodo de **`r format(as_date(año_periodo_maximo_vf$Periodo), "%B de %Y")`** con **`r comma(suma_periodo_maximo_vf)`**.
 
 ```{r echo=FALSE, fig.width=10, fig.height=5}
-ggplotly(vf_ts)
+ggplotly(vf_ts, tooltip = "text")
 ```
-
 
 ```{r include=FALSE, fig.width=10, fig.height=5}
 merge_regional %>%
@@ -792,11 +816,15 @@ vf_2022_mun<-vf_2022_mun %>% summarise(Total=sum(Total))
 
 principal_porcentaje_vf<-(vf_principal_4_suma/vf_2022_mun)*100
 
-ggplot(anual_vf) +
-  aes(x =as.factor(Año), y = Total) +
+anual_vf %>% 
+ mutate(text = paste("Año: ", Año,
+                    "\nTotal de carpetas: ", scales::comma(Total), sep=""))%>%
+  
+ggplot() +
+  aes(x =as.factor(Año), y = Total, text=text) +
   geom_col(fill = "#f21d72") +
   theme_minimal()+
-  geom_text(aes(label=comma(Total)), size=3.0)+
+  #geom_text(aes(label=comma(Total)), size=3.0)+
   scale_fill_hue(direction = 1) +
   scale_y_continuous(labels = scales::comma) +
   theme_minimal()+
@@ -812,15 +840,13 @@ ggplot(anual_vf) +
 
 ```
 
-De 2015 a 2022 se han registrado **`r comma(vf_total)`** carpetas de **Violencia familiar infantil** en la región, el año con mayor registros es el **`r vf_año`** con  **`r comma(vf_max)`**. De enero a septiembre 2022 se han contabilizado **`r comma(vf_2022)`** carpetas.
+De 2015 a 2022 se han registrado **`r comma(vf_total)`** carpetas de **Violencia familiar infantil** en la región, el año con mayor registros es el **`r vf_año`** con **`r comma(vf_max)`**. De enero a septiembre 2022 se han contabilizado **`r comma(vf_2022)`** carpetas.
 
 ```{r echo=FALSE, fig.width=10, fig.height=5}
-ggplotly(g_anual_vf)
+ggplotly(g_anual_vf, tooltip = "text")
 ```
 
-
 De los municipios con mayor número de incidencia se encuentran: **`r mun_principales_vf`**, los cuales representan el **`r round(principal_porcentaje_vf)`** **%** de las carpetas registradas en la región durante 2022.
-
 
 ```{r include=FALSE}
 
@@ -852,10 +878,9 @@ DT::datatable(asi)
 
  
 
-### <b>Feminicidio</b>
+## **Feminicidio**
 
 </p>
-
 
 ```{r include=FALSE}
 
@@ -904,10 +929,14 @@ nb.cols <-12
 mycolors <- colorRampPalette(brewer.pal(9, "RdPu"))
 (nb.cols)
 
-ggplot(merge_regional_femi) + #Cambiar
-  aes(x=reorder(Región, Total_regional), y= Total_regional, fill= Total_regional) +
+merge_regional_femi %>% 
+  mutate(text = paste("Región: ", Región,
+                    "\nTotal de carpetas: ", scales::comma(Total_regional), sep=""))%>%
+ggplot() + #Cambiar
+  aes(x=reorder(Región, Total_regional), y= Total_regional, 
+      fill= Total_regional, text=text) +
   geom_col() +
-  geom_text(aes(label=comma(Total_regional)), size=3.0, color="#030303", vjust = .5, hjust=-1) +
+  #geom_text(aes(label=comma(Total_regional)), size=3.0, color="#030303", vjust = .5, hjust=-1) +
   #scale_fill_viridis(discrete = F, option = "I", direction = -1) + #opción  A, B, C , D , E , F ,G +
   scale_fill_gradient(low = "#BA8CDC", high = "#7030A0")+
   scale_y_continuous(labels = scales::comma) +
@@ -926,7 +955,7 @@ ggplot(merge_regional_femi) + #Cambiar
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=10, fig.height=5}
 #Gráfico de barras total
-ggplotly(grafico_regional_femi)
+ggplotly(grafico_regional_femi, tooltip = "text")
 ```
 
 ```{r include=FALSE}
@@ -970,9 +999,12 @@ historico_femi[1,2]->promedio_femi
 historico_femi[1,1]->suma_femi
 
 
-
-ggplot(femi_jal) +
-  aes(x = Periodo, y = Total) +
+femi_jal %>% 
+  filter(Periodo<="2022-08-01") %>% 
+   mutate(text = paste("Periodo: ", format(as_date(asi_jal$Periodo), "%B de %Y"),
+                    "\nTotal de carpetas: ", scales::comma(Total), sep=""))%>%
+ggplot() +
+  aes(x = Periodo, y = Total, text=text, group=1) +
   geom_line(size = .5, colour = "#7030A0") +
   geom_point(size = 1,colour = "#7030A0")+
   theme_minimal()+
@@ -987,9 +1019,10 @@ ggplot(femi_jal) +
         axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=1, size=11))->femi_ts
 ```
 
-De 2015 a 2022 se contabilizan **`r suma_femi`** carpetas por **Feminicidio**, un promedio mensual de **`r promedio_femi`**. El mes con mayor registros de carpetas de investigación por este delito es el periodo de **`r format(as_date(año_periodo_maximo_femi$Periodo), "%B de %Y")`** con **`r suma_periodo_maximo_femi`**. 
+De 2015 a 2022 se contabilizan **`r suma_femi`** carpetas por **Feminicidio**, un promedio mensual de **`r promedio_femi`**. El mes con mayor registros de carpetas de investigación por este delito es el periodo de **`r format(as_date(año_periodo_maximo_femi$Periodo), "%B de %Y")`** con **`r suma_periodo_maximo_femi`**.
+
 ```{r echo=FALSE, fig.width=10, fig.height=5}
-ggplotly(femi_ts)
+ggplotly(femi_ts, tooltip = "text")
 ```
 
 ```{r include=FALSE, fig.width=10, fig.height=5}
@@ -1039,11 +1072,14 @@ femi_2022_mun<-femi_2022_mun %>% summarise(Total=sum(Total))
 
 principal_porcentaje_femi<-(femi_principal_4_suma/femi_2022_mun)*100
 
-ggplot(anual_femi) +
-  aes(x =as.factor(Año), y = Total) +
+anual_femi %>% 
+  mutate(text = paste("Año: ", Año,
+                    "\nTotal de carpetas: ", scales::comma(Total), sep=""))%>%
+ggplot() +
+  aes(x =as.factor(Año), y = Total, text=text) +
   geom_col(fill = "#6609bd") +
   theme_minimal()+
-  geom_text(aes(label=comma(Total)), size=3.0, color="#030303")+
+  #geom_text(aes(label=comma(Total)), size=3.0, color="#030303")+
   scale_fill_hue(direction = 1) +
   scale_y_continuous(labels = scales::comma) +
   theme_minimal()+
@@ -1059,15 +1095,13 @@ ggplot(anual_femi) +
 
 ```
 
-De 2015 a 2022 se han registrado **`r femi_total`** feminicidios en la región, el año con mayor registros es el **`r femi_año`** con  **`r femi_max`**. De enero a septiembre 2022 se han contabilizado **`r femi_2022`** carpetas.
+De 2015 a 2022 se han registrado **`r femi_total`** feminicidios en la región, el año con mayor registros es el **`r femi_año`** con **`r femi_max`**. De enero a septiembre 2022 se han contabilizado **`r femi_2022`** carpetas.
 
 ```{r echo=FALSE, fig.width=10, fig.height=5}
-ggplotly(g_anual_femi)
+ggplotly(g_anual_femi, tooltip = "text")
 ```
 
-
 De los municipios con mayor número de incidencia se encuentran: **`r mun_principales_femi`**, los cuales representan el **`r principal_porcentaje_femi`** **%** de las carpetas registradas en la región durante 2022.
-
 
 ```{r include=FALSE}
   merge_regional %>%
@@ -1091,8 +1125,6 @@ De los municipios con mayor número de incidencia se encuentran: **`r mun_princi
 ```{r echo=FALSE, fig.width=4, fig.height=4}
 DT::datatable(femi)
 ```
-
-
 
 ```{r include=FALSE}
 #Medidas
@@ -1172,19 +1204,15 @@ max_total_año_ordenes<-max_total_ordenes[1,1]
 
 ```
 
-
  
 
-
-### <b>Ordenes de protección</b>
+## **Ordenes de protección**
 
 En la región centro del 2019 a agosto de 2022 se han emitido **`r ordenes_total`** ordenes de protección, siendo el año **`r max_total_año_ordenes`** el de mayor número de registros históricos con **`r suma_total_ordenes`** En la tabla siguiente se presenta el desagregado por entidades de la región.
 
 ```{r echo=FALSE, fig.width=4, fig.height=4}
 DT::datatable(ordenes)
 ```
-
-
 
 ```{r include=FALSE}
 #Medidas de protección
@@ -1246,12 +1274,9 @@ max_total_año_medidas<-max_total_medidas[1,1]
 
 ```
 
-
-### <b>Medidas de protección</b>
-
+## **Medidas de protección**
 
 En la región centro del 2019 a agosto de 2022 se han emitido **`r medidas_total`** medidas de protección, siendo el año **`r max_total_año_medidas`** el de mayor número registros históricos con **`r suma_total_medidas`** En la tabla siguiente se presenta el desagregado por entidades de la región.
-
 
 ```{r echo=FALSE, fig.width=4, fig.height=4}
 DT::datatable(medidas)
